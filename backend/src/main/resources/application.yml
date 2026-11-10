@@ -1,0 +1,78 @@
+server:
+  address: ${BACKEND_HOST:127.0.0.1}
+  port: ${BACKEND_PORT:8080}
+  shutdown: graceful
+  error:
+    include-message: never
+    include-stacktrace: never
+spring:
+  application:
+    name: yunshu-backend
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:127.0.0.1}:${MYSQL_PORT:13306}/${MYSQL_DATABASE:yunshu_zhixue}?connectionTimeZone=UTC&forceConnectionTimeZoneToSession=true&characterEncoding=UTF-8
+    username: ${MYSQL_USER:yunshu_app}
+    password: ${MYSQL_PASSWORD}
+    hikari:
+      connection-init-sql: SET time_zone = '+00:00'
+      maximum-pool-size: 10
+      minimum-idle: 1
+      connection-timeout: 5000
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:16379}
+      password: ${REDIS_PASSWORD}
+      timeout: 3s
+      connect-timeout: 3s
+  session:
+    timeout: ${SESSION_TIMEOUT:30m}
+    redis:
+      namespace: yunshu:session
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    clean-disabled: true
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    deserialization:
+      fail-on-unknown-properties: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+      group:
+        readiness:
+          include: readinessState,db,redis,minio
+logging:
+  level:
+    root: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.session: INFO
+  structured:
+    format:
+      console: logstash
+yunshu:
+  security:
+    secure-cookies: ${SECURE_COOKIES:false}
+  storage:
+    endpoint: ${MINIO_ENDPOINT:http://127.0.0.1:${MINIO_API_PORT:19000}}
+    access-key: ${MINIO_APP_ACCESS_KEY:yunshu_storage_app}
+    secret-key: ${MINIO_APP_SECRET_KEY}
+    bucket: ${MINIO_BUCKET:yunshu-assets}
+    region: us-east-1

@@ -1,0 +1,9 @@
+{
+  "markdown.styles": [
+    ".vscode/markdown-preview.css"
+  ],
+  "markdown.preview.fontFamily": "'Segoe UI', 'Microsoft YaHei', 'PingFang SC', Arial, sans-serif",
+  "markdown.preview.fontSize": 14,
+  "markdown.preview.lineHeight": 1.7,
+  "python.terminal.useEnvFile": true
+}

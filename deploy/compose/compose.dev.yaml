@@ -1,0 +1,115 @@
+name: yunshu-zhixue-dev
+
+x-runtime: &runtime
+  restart: unless-stopped
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  mysql:
+    <<: *runtime
+    image: mysql:8.4.13
+    environment:
+      TZ: UTC
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-yunshu_zhixue}
+      MYSQL_USER: ${MYSQL_USER:-yunshu_app}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?请在根目录 .env 中设置 MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请在根目录 .env 中设置 MYSQL_ROOT_PASSWORD}
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_as_ci
+      - --default-time-zone=+00:00
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-13306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP --host=127.0.0.1 --user="$$MYSQL_USER" --database="$$MYSQL_DATABASE" --execute="SELECT 1" > /dev/null 2>&1'
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 60s
+    stop_grace_period: 60s
+
+  redis:
+    <<: *runtime
+    image: redis:8.4.8-alpine3.22
+    environment:
+      TZ: UTC
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?请在根目录 .env 中设置 REDIS_PASSWORD}
+      REDIS_MAXMEMORY: ${REDIS_MAXMEMORY:-256mb}
+    command:
+      - /bin/sh
+      - -ec
+      - 'exec /usr/local/bin/docker-entrypoint.sh redis-server --appendonly yes --appendfsync everysec --maxmemory "$$REDIS_MAXMEMORY" --maxmemory-policy noeviction --requirepass "$$REDIS_PASSWORD"'
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-16379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli -h 127.0.0.1 ping | grep -qx PONG'
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    stop_grace_period: 30s
+
+  minio:
+    <<: *runtime
+    image: yunshu-zhixue/minio-dev:RELEASE.2025-10-15T17-29-55Z
+    pull_policy: never
+    build:
+      context: ../docker/minio
+      dockerfile: Dockerfile
+    environment:
+      TZ: UTC
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-yunshu_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?请在根目录 .env 中设置 MINIO_ROOT_PASSWORD}
+    command: ["minio", "server", "/data", "--address", ":9000", "--console-address", ":9001"]
+    ports:
+      - "127.0.0.1:${MINIO_API_PORT:-19000}:9000"
+      - "127.0.0.1:${MINIO_CONSOLE_PORT:-19001}:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:9000/minio/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    stop_grace_period: 30s
+
+  minio-init:
+    image: yunshu-zhixue/minio-dev:RELEASE.2025-10-15T17-29-55Z
+    pull_policy: never
+    restart: "no"
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-yunshu_admin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?请在根目录 .env 中设置 MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: ${MINIO_BUCKET:-yunshu-assets}
+      MINIO_APP_ACCESS_KEY: ${MINIO_APP_ACCESS_KEY:-yunshu_storage_app}
+      MINIO_APP_SECRET_KEY: ${MINIO_APP_SECRET_KEY:?请在根目录 .env 中设置 MINIO_APP_SECRET_KEY}
+      MC_CONFIG_DIR: /tmp/mc
+    command: ["/bin/sh", "/opt/minio/init.sh"]
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:
+
+# 使用 Compose 默认网络；后续应用容器通过 mysql、redis、minio 服务名连接。

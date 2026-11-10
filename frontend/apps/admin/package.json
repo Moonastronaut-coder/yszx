@@ -1,0 +1,22 @@
+{
+  "name": "@yunshu/admin",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit",
+    "build": "vue-tsc -p tsconfig.json --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@yunshu/shared": "workspace:*",
+    "@yunshu/http": "workspace:*",
+    "@yunshu/ui": "workspace:*",
+    "vue": "3.5.44",
+    "vue-router": "4.6.4",
+    "pinia": "3.0.4",
+    "echarts": "6.1.0",
+    "element-plus": "2.14.7"
+  }
+}

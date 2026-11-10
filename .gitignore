@@ -1,0 +1,23 @@
+# 本地凭据；允许提交环境变量示例。
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# 本地数据和证书私钥。
+deploy/data/
+deploy/secrets/
+*.key
+
+# 工具、依赖、构建产物与运行日志。
+.tools/
+.tmp/
+**/node_modules/
+**/target/
+**/dist/
+**/playwright-report/
+**/test-results/
+*.log
+*.tsbuildinfo

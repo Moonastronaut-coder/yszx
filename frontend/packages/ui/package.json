@@ -1,0 +1,19 @@
+{
+  "name": "@yunshu/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./src/theme.css"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "vue": "3.5.44"
+  },
+  "scripts": {
+    "typecheck": "vue-tsc -p tsconfig.json --noEmit"
+  }
+}

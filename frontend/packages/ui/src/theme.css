@@ -1,0 +1,140 @@
+:root {
+  font-family: Inter, 'Microsoft YaHei', sans-serif;
+  color: #172b4d;
+  background: #f4f7fb;
+  font-synthesis: none;
+  line-height: 1.6;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+}
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+button:focus-visible,
+a:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 4px;
+}
+.app-frame {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-header {
+  padding: 18px max(24px, calc((100vw - 1120px) / 2));
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: #fff;
+  border-bottom: 1px solid #e5eaf3;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #172b4d;
+  font-size: 21px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.brand-symbol {
+  background: #2563eb;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  font-size: 18px;
+}
+.app-label {
+  padding-left: 20px;
+  border-left: 1px solid #dce3ef;
+  color: #63738c;
+  font-size: 14px;
+}
+.app-main {
+  width: min(100% - 48px, 1120px);
+  margin: 64px auto;
+  flex: 1;
+}
+.eyebrow {
+  color: #2563eb;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  margin: 12px 0;
+  letter-spacing: -0.04em;
+}
+.lead {
+  max-width: 680px;
+  color: #63738c;
+  margin-bottom: 32px;
+}
+.foundation-card {
+  max-width: 760px;
+  background: #fff;
+  border: 1px solid #e5eaf3;
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 10px 30px #172b4d06;
+}
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.status-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.status-dot.ready {
+  background: #16a34a;
+}
+.status-dot.error {
+  background: #dc2626;
+}
+.muted {
+  color: #63738c;
+  font-size: 14px;
+}
+.primary-button {
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 18px;
+  background: #2563eb;
+  color: white;
+  margin-top: 20px;
+}
+.app-footer {
+  color: #8090a6;
+  text-align: center;
+  font-size: 12px;
+  padding: 24px;
+}
+@media (max-width: 600px) {
+  .app-main {
+    margin: 36px auto;
+  }
+  .foundation-card {
+    padding: 20px;
+  }
+}
